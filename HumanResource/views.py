@@ -88,3 +88,70 @@ class NewJob(View):
             messages.warning(request, 'Please add a job title')
 
         return render(request, 'app/new_job.html')
+
+
+class EditJob(View):
+    def get(self, request, job_id):
+        job = Job.objects.filter(id=job_id)[0] # [0] to show the data -in the fields-
+        return render(request, 'app/edit_job.html', locals())
+    
+    def post(self, request, job_id):
+        job = Job.objects.filter(id=job_id)[0]
+
+        job_title = request.POST.get('jobTitle')
+        department = request.POST.get('department')
+        salary = request.POST.get('salary')
+        location = request.POST.get('location')
+        introduction = request.POST.get('introduction')
+        description = request.POST.get('description')
+        responsibilities = request.POST.get('responsibilities')
+        qualifications = request.POST.get('qualifications')
+        is_active = request.POST.get('recruiting')
+
+        if job_title:
+            if department:
+                if salary != '' and int(salary) > 0:
+                    if location:
+                        if introduction:
+                            if description:
+                                if responsibilities:
+                                    if qualifications:
+                                        # Update job to db
+
+                                        try:
+                                            job.job_title = job_title
+                                            job.department = department
+                                            job.salary = salary
+                                            job.location = location
+                                            job.introduction = introduction
+                                            job.brief_posting_description = description
+                                            job.responsibilities = responsibilities
+                                            job.qualifications = qualifications
+                                            job.is_active = is_active
+                                            job.save()
+                                            messages.success(request, 'Job Updated Successfully')
+                                            return redirect('home')
+
+                                        except Exception as e:
+                                            print(e)
+                                            messages.warning(request, 'Job Update not successful')
+
+                                    else:
+                                        messages.warning(request, 'Enter qualifications')
+                                else:
+                                    messages.warning(request, 'Enter responsibilities')
+
+                            else:
+                                messages.warning(request, 'Enter description')
+                        else:
+                            messages.warning(request, 'Enter an introduction')
+                    else:
+                        messages.warning(request, 'Enter a valid location')
+                else:
+                    messages.warning(request, 'Enter a valid salary')
+            else:
+                messages.warning(request, 'Please add a department')
+        else:
+            messages.warning(request, 'Please add a job title')
+
+        return render(request, 'app/edit_job.html')

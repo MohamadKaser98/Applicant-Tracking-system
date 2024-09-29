@@ -113,15 +113,16 @@
                     <div class="stretch-card" style="margin-top: -20px;">
 
                         
+                        {% if data.job.is_active %}
                         <a class="btn btn-inverse-success btn-rounded btn-md"
-                        style="height: 24px !important; padding: 5px !important; width: 100px !important; font-size: 12px;" href="#">Active</a>
+                        style="height: 24px !important; padding: 5px !important; width: 100px !important; font-size: 12px;" href="{% url 'edit-job' data.job.id %}">Active</a>
 
-                        
+                        {% else %}
 
                         <a class="btn btn-inverse-danger btn-rounded btn-md"
-                        style="height: 24px !important; padding: 5px !important; width: 100px !important; font-size: 12px;" href="#">Expired</a>
+                        style="height: 24px !important; padding: 5px !important; width: 100px !important; font-size: 12px;" href="{% url 'edit-job' data.job.id %}">Expired</a>
 
-                        
+                        {%  endif %}
 
                         {% if data.posted > 0 %}
 
