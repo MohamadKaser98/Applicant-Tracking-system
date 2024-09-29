@@ -4,11 +4,6 @@ from django.shortcuts import render, HttpResponse
 
 
 def home(request):
-    return HttpResponse('This is the home page')
+    return render(request, 'app/index.html')
 
 
-def about(request):
-    return HttpResponse('This is the about us page')
-
-def services(request):
-    return HttpResponse('This is the services page')
