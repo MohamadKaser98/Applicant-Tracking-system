@@ -2,7 +2,7 @@ import datetime
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from django.contrib import messages
-from .models import Job
+from .models import Job, Applicant
 # Create your views here.
 
 
@@ -169,3 +169,40 @@ def job_detail_page(request, job_id):
     except Exception as e:
         print(e)
         return HttpResponse('Job Not found')
+    
+
+
+class ApplyJob(View):
+    def get(self, request, job_id):
+        try:
+            job = Job.objects.filter(id=job_id)[0]
+            return render(request, 'app/apply_job.html', locals())
+        except Exception as e:
+            print(e)
+            return HttpResponse('Job Not Found')
+
+    def post(self, request, job_id):
+        try:
+            job = Job.objects.get(id=job_id)
+
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            gender = request.POST.get('gender')
+            email = request.POST.get('email')
+            location = request.POST.get('location')
+            cv = request.FILES.get('cv')
+
+            # Add applicant to db
+            if not Applicant.objects.filter(email=email, job=job_id):
+                new_applicant = Applicant.objects.create(first_name=first_name, last_name=last_name,
+                                                         gender=gender, email=email, location=location, cv=cv,
+                                                         job=job)
+                # save details to the database
+                new_applicant.save()
+                return render(request, 'app/app_successful.html')
+
+            messages.warning(request, 'You have already applied for this job')
+
+        except Exception as e:
+            print(e)
+        return render(request, 'app/apply_job.html', locals())

@@ -25,3 +25,6 @@ urlpatterns = [
     path('', include('HumanResource.urls')),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Setup URLS for MEDIA files
+urlpatterns += static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)
