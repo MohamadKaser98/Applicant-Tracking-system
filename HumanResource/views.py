@@ -155,3 +155,17 @@ class EditJob(View):
             messages.warning(request, 'Please add a job title')
 
         return render(request, 'app/edit_job.html')
+
+
+def careers(request):
+    jobs = Job.objects.filter(is_active=True)
+    return render(request, 'app/careers.html', locals())
+
+def job_detail_page(request, job_id):
+    try:
+        job = Job.objects.filter(id=job_id)[0]
+        return render(request, 'app/job_detail.html', locals())
+
+    except Exception as e:
+        print(e)
+        return HttpResponse('Job Not found')
