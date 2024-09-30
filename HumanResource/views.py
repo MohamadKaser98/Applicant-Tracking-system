@@ -15,12 +15,15 @@ def home(request):
         lower_bound = j.salary * 0.9
         upper_bound = j.salary * 1.1
         posted = (datetime.datetime.today().date() - j.date_posted).days
+        applicants = j.applicants.all().count()
 
         job_data[j.id] = {
             'job': j,
             'lower_bound': lower_bound,
             'upper_bound': upper_bound,
-            'posted': posted
+            'posted': posted,
+            'applicants': applicants,
+            
         }
 
     return render(request, 'app/hr_dashboard.html', {'job_data':job_data, 'total_jobs': Job.objects.all().count()})
