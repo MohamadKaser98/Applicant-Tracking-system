@@ -6,15 +6,18 @@ from django.core.exceptions import ValidationError
 departments = (('HR', 'Human Resource'), ('IT', 'Information Technology'), ('Marketing', 'Marketing'),
                ('Finance', 'Finance'), ('R&D', 'Research and Development'))
 
+
 locations = (('Nairobi, Kenya', 'Nairobi, Kenya'), ('California, US', 'California, US'),
              ('London, UK', 'London, UK'), ('San fransisco, US', 'San fransisco, US'),
              ('Cape Town, SA', 'Cape Town, SA'))
 
 genders = (('Male', 'Male'), ('Female', 'Female'), ('Prefer not to say', 'Prefer not to say'))
 
+
 def validate_pdf(value):
     if not value.name.endswith('.pdf'):
         raise ValidationError('Only PDF files are allowed as CV')
+
 
 class Job(models.Model):
     job_title = models.CharField(max_length=100, null=False)
@@ -31,7 +34,10 @@ class Job(models.Model):
 
     def __str__(self):
         return self.job_title
-    
+
+# job = Job.object.get(id=1)
+# job.applicants
+
 
 class Applicant(models.Model):
     first_name = models.CharField(max_length=100)
@@ -44,7 +50,6 @@ class Applicant(models.Model):
 
     def __str__(self):
         return self.first_name
-    
 
 
 class Shortlist(models.Model):
@@ -55,3 +60,13 @@ class Shortlist(models.Model):
 
     def __str__(self):
         return self.applicant.first_name
+
+
+
+
+
+
+
+
+
+

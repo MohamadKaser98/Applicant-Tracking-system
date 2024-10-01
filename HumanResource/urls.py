@@ -23,7 +23,8 @@ urlpatterns = [
     path('edit-job/<int:job_id>/', views.EditJob.as_view(), name='edit-job'),
     path('careers/', views.careers, name='careers'),
     path('job-detail/<int:job_id>/', views.job_detail_page, name='job-detail'),
-    path('app-job/<int:job_id>/', views.ApplyJob.as_view(), name='apply-job'),
-    
+    path('app-job/<int:job_id>/', views.applyJob.as_view(), name='apply-job'),
+    path('shortlist/<int:job_id>/', views.shortlist, name='shortlist'),
+    path('shortlist-candidates/<int:job_id>/', views.shortlist_candidates, name='shortlist-candidates')
    
 ]

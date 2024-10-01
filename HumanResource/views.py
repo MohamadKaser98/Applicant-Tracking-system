@@ -1,8 +1,11 @@
 import datetime
+import json
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from django.contrib import messages
 from .models import Job, Applicant, Shortlist
+from .utils import consult_ai
+
 # Create your views here.
 
 
@@ -20,16 +23,15 @@ def home(request):
 
         job_data[j.id] = {
             'job': j,
-            'lower_bound': lower_bound,
-            'upper_bound': upper_bound,
+            'lower_bound': f"{lower_bound:.2f}",
+            'upper_bound': f"{upper_bound:.2f}",
             'posted': posted,
             'applicants': applicants,
             'shortlisted': shortlisted
 
-
         }
 
-    return render(request, 'app/hr_dashboard.html', {'job_data':job_data, 'total_jobs': Job.objects.all().count()})
+    return render(request, 'app/hr_dashboard.html', {'job_data': job_data, 'total_jobs': Job.objects.all().count()})
 
 
 class NewJob(View):
@@ -64,7 +66,7 @@ class NewJob(View):
                             if description:
                                 if responsibilities:
                                     if qualifications:
-                                        # Add job to db (CREATE Operation)
+                                        # Add job to db
 
                                         new_job = Job.objects.create(job_title=job_title, department=department,
                                                                      salary=salary, location=location,
@@ -98,9 +100,9 @@ class NewJob(View):
 
 class EditJob(View):
     def get(self, request, job_id):
-        job = Job.objects.filter(id=job_id)[0] # [0] to show the data -in the fields-
+        job = Job.objects.filter(id=job_id)[0]
         return render(request, 'app/edit_job.html', locals())
-    
+
     def post(self, request, job_id):
         job = Job.objects.filter(id=job_id)[0]
 
@@ -167,6 +169,7 @@ def careers(request):
     jobs = Job.objects.filter(is_active=True)
     return render(request, 'app/careers.html', locals())
 
+
 def job_detail_page(request, job_id):
     try:
         job = Job.objects.filter(id=job_id)[0]
@@ -175,10 +178,9 @@ def job_detail_page(request, job_id):
     except Exception as e:
         print(e)
         return HttpResponse('Job Not found')
-    
 
 
-class ApplyJob(View):
+class applyJob(View):
     def get(self, request, job_id):
         try:
             job = Job.objects.filter(id=job_id)[0]
@@ -212,4 +214,53 @@ class ApplyJob(View):
         except Exception as e:
             print(e)
         return render(request, 'app/apply_job.html', locals())
+
+
+def shortlist(request, job_id):
+    job = Job.objects.get(id=job_id)
+
+    short_list = job.shortlist.all().order_by('-score')
+
+    shortlisted = job.shortlist.all().count()
+
+    return render(request, 'app/shortlist.html', locals())
+
+
+def shortlist_candidates(request, job_id):
+    try:
+        job = Job.objects.get(id=job_id)
+    except Exception as e:
+        print(e)
+        return HttpResponse('Job not found')
+
+    try:
+        Shortlist.objects.filter(job=job_id).delete()
+        applicants = job.applicants.all()
+        for applicant in applicants:
+            response = json.loads(consult_ai(job=job, cv_path=applicant.cv))
+
+            if response['score'] >= 80:
+                new_shortlist = Shortlist.objects.create(job=job, applicant=applicant, score=response['score'],
+                                                         summary=response['summary'])
+                new_shortlist.save()
+
+    except Exception as e:
+        print(e)
+        messages.warning(request, 'Unable to shortlist candidates')
+
+    return redirect('shortlist', job_id=job_id)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
