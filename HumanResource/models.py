@@ -44,3 +44,14 @@ class Applicant(models.Model):
 
     def __str__(self):
         return self.first_name
+    
+
+
+class Shortlist(models.Model):
+    applicant = models.ForeignKey(Applicant, on_delete=models.CASCADE, related_name='shortlisted_jobs')
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='shortlist')
+    score = models.IntegerField()
+    summary = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return self.applicant.first_name
