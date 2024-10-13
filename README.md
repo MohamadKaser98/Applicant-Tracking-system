@@ -25,7 +25,7 @@ An HR management web application built using Django and Bootstrapdash that allow
 ## Technologies
 - Backend: Django (Python)
 - Database: SQLite
-- Frontend: HTML5, CSS3, JavaScript, Bootstrap, Bootstrapdash
+- Frontend: HTML5, CSS, JavaScript, Bootstrap, Bootstrapdash
 - ML model: Groq (Meta's Llama 3 70B LLM)
 
 
